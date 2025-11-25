@@ -1,0 +1,6 @@
+login
+    table
+        Utilisateur(id,email,mdp,nom,prenom,role)
+    fonction
+        login(email,mdp)
+        creer_utilisateur(email,mdp,nom,prenom)

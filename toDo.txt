@@ -1,0 +1,35 @@
+gestion de porte feuille
+    affichage
+        solde des cryptomonaies
+        historiques des transactions
+        valeur total de la porte feuille
+    base
+        cryptomonaies(id_crypto,nom)
+        cours(id_cours,id_crypto,valeur,date)
+        utilisateur (id_utilisateur,email,nom,prenom,mdp,date_creation)
+        soldeFond(id_solde_fond,id_utilisateur,montant,date)
+        soldeCrypto(id_solde,id_crypto,id_utlisateur,quantite,date)
+        typeTransaction(id_type,nom)
+        transaction(id_transaction,id_type,id_utilisateur,montant,quantite,id_crypto,date)
+
+    fonction
+        getSoldeCryptoMonaie(id_utilisateur)
+        getHistoriqueTransaction(id_utilisateur)
+        getValeurTotalPorteFeuille(id_utilisateur)
+
+gestion de retrait et depot
+    affichage
+        depot(montant)
+            confirmation mail
+        retrait(montant)
+            confirmation mail
+    
+    base 
+        utilisateur (id_utilisateur,email,nom,prenom,mdp,date_creation)
+        soldeFond(id_solde_fond,id_utilisateur,montant,date)
+    fonction
+        depot(id_utilisateur,montant)
+        retrait(id_utilisateur,montant)
+
+
+
