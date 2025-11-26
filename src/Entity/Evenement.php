@@ -38,6 +38,10 @@ class Evenement
     
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $datePublication = null;
+    
+    #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Utilisateur $utilisateur = null;
 
     public function getId(): ?Uuid
     {
@@ -127,5 +131,14 @@ class Evenement
             $this->datePublication = new \DateTimeImmutable();
         }
     }
+    public function getUtilisateur(): ?Utilisateur
+    {
+        return $this->utilisateur;
+    }
+    public function setUtilisateur(?Utilisateur $utilisateur): static
+    {
+        $this->utilisateur = $utilisateur;
 
+        return $this;
+    }
 }

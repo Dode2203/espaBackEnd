@@ -12,16 +12,21 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Annotation\TokenRequired;
+use App\Service\JwtTokenManager;
 #[Route('/evenement')]
 class EvenementController extends AbstractController
 {
     private EvenementService $evenementService;
     private EntityManagerInterface $em;
 
+    private JwtTokenManager $jwtTokenManager;
+
     public function __construct(
-        EvenementService $evenementService
+        EvenementService $evenementService,
+        JwtTokenManager $jwtTokenManager
     ) {
         $this->evenementService = $evenementService;
+        $this->jwtTokenManager = $jwtTokenManager;
     }
 
     #[Route('', name: 'api_evenement_create', methods: ['POST'])]
@@ -29,6 +34,9 @@ class EvenementController extends AbstractController
     public function create(Request $request): JsonResponse
     {
         try {
+            $token = $this->jwtTokenManager->extractTokenFromRequest($request);
+            $arrayToken = $this->jwtTokenManager->extractClaimsFromToken($token);
+            $idUser = $arrayToken['id']; // Récupérer l'id de l'utilisateur à partir du token
             $data = json_decode($request->getContent(), true);
 
             // Champs requis
@@ -81,7 +89,7 @@ class EvenementController extends AbstractController
                     'message' => 'La date de début doit être antérieure à la date de fin.'
                 ], 400);
             }
-            $evenement = $this->evenementService->createEvenement($evenement, $photo);
+            $evenement = $this->evenementService->createEvenement($evenement, $photo,$idUser);
 
             return new JsonResponse([
                 'status' => 'success',
@@ -98,6 +106,9 @@ class EvenementController extends AbstractController
 
         } catch (\Exception $e) {
             // Retourne l'erreur en JSON
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
+            
             return new JsonResponse([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -106,6 +117,7 @@ class EvenementController extends AbstractController
     }
 
     #[Route('', name: 'evenements_avant', methods: ['GET'])]
+    #[TokenRequired]
     public function getEvenementsAvant(Request $request): JsonResponse
     {
         try {

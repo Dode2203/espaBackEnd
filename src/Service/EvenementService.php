@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Evenement;
 use App\Repository\EvenementRepository;
+use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Photo;
 use App\Repository\TypeEventRepository;
@@ -13,12 +14,15 @@ class EvenementService
     private EntityManagerInterface $em;
     private EvenementRepository $evenementRepository;
     private TypeEventRepository $typeEventRepository;
+    
+    private UtilisateurRepository $utilisateurRepository;
 
-    public function __construct(EntityManagerInterface $em, EvenementRepository $evenementRepository , TypeEventRepository $typeEventRepository )
+    public function __construct(EntityManagerInterface $em, EvenementRepository $evenementRepository , TypeEventRepository $typeEventRepository ,UtilisateurRepository $utilisateurRepository)
     {
         $this->em = $em;
         $this->evenementRepository = $evenementRepository;
         $this->typeEventRepository = $typeEventRepository;
+        $this->utilisateurRepository = $utilisateurRepository;
     }
     public function getById(string $id): ?Evenement
     {
@@ -36,13 +40,21 @@ class EvenementService
      * @param Evenement $evenement
      * @return Evenement
      */
-    public function createEvenement(Evenement $evenement, ?Photo $photo = null): Evenement
+    public function createEvenement(Evenement $evenement, ?Photo $photo = null,int $userId=1): Evenement
     {
         $conn = $this->em->getConnection();
         $conn->beginTransaction(); 
 
         try {
             // 1️⃣ Vérification du type d'événement
+            $user = $this->utilisateurRepository->find($userId);
+            
+
+            if (!$user) {
+                throw new \Exception("Utilisateur introuvable avec l'ID : $userId");
+            }
+
+            $evenement->setUtilisateur($user);
             $this->validateAndGetTypeEvent($evenement);
 
             // 2️⃣ Enregistrement de la photo si fournie
