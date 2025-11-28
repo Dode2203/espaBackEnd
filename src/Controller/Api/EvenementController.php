@@ -59,10 +59,11 @@ class EvenementController extends AbstractController
             if (!empty($missingFields)) {
                 return new JsonResponse([
                     'status' => 'error',
-                    'message' => 'Champs requis manquants',
+                    'message' => 'Champs requis manquants : ' . implode(', ', $missingFields) .$typeEventId,
                     'missingFields' => $missingFields
                 ], 400);
             }
+
 
             // Créer la photo si fournie
             $photo = null;

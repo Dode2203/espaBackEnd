@@ -17,6 +17,7 @@ Pour forcer le nettoyage du cache en environnement dev :
 php bin/console cache:clear --env=dev
 
 pour lancer le serveur
+php -S 192.168.88.163:8000 -t public
 php -S 192.168.1.212:8000 -t public
 
 composer require symfony/uid

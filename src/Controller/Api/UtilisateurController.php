@@ -123,7 +123,8 @@ class UtilisateurController extends AbstractController
         $claims = [
             'id' => $user->getId(),
             'email' => $user->getEmail(),
-            'role' => $user->getRole()->getName()
+            'role' => $user->getRole()->getName(),
+            'name' => $user->getNom().' '.$user->getPrenom()
         ];
 
         $tokenDuration = $this->params->get('jwt_token_duration');
