@@ -30,7 +30,45 @@ class UtilisateurController extends AbstractController
         $this->jwtTokenManager = $jwtTokenManager;
         $this->params = $params;
     }
+    #[Route('', name: 'user', methods: ['GET'])]
+    #[TokenRequired(['Admin','Utilisateur'])]
+    public function getUtilisateur(Request $request): JsonResponse
+    {
+        try {
 
+            $users = $this->utilisateurService->getAllUsers();
+
+            $usersArray = array_map(function ($e) {
+                return [
+                    'id' => $e->getId(),
+                    'email' => $e->getEmail(),
+                    'nom' => $e->getNom(),
+                    'prenom' => $e->getPrenom(),
+                    'role' => $e->getRole()->getName(),
+                    'status' => $e->getStatus() ? $e->getStatus()->getName() : null
+                ];
+            }, $users);
+
+            return new JsonResponse([
+                'status' => 'success',
+                'data' => $usersArray
+            ], 200);
+
+        } catch (\Exception $e) {
+                if ($e->getMessage() === 'Inactif') {
+                    return new JsonResponse([
+                        'status' => 'error',
+                        'message' => 'Utilisateur inactif'
+                    ], 401); // ← renvoie bien 401
+                }
+
+                return new JsonResponse([
+                    'status' => 'error',
+                    'message' => $e->getMessage()
+                ], 400);
+            }
+
+    }
     #[Route('', name: 'api_utilisateur_create', methods: ['POST'])]
     #[TokenRequired(['Admin','Utilisateur'])]
     public function createUser(Request $request): JsonResponse
