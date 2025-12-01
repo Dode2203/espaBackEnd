@@ -42,6 +42,10 @@ class UtilisateurService
 
         return $user;
     }
+    public function getAllUsers(): array
+    {
+        return $this->utilisateurRepository->findAll();
+    }
     public function createUser(Utilisateur $user): Utilisateur
     {
         $role= $this->roleRepository->find(2); // 2 correspond au rôle "Utilisateur"
