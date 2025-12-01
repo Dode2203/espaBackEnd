@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Photo;
 use App\Repository\TypeEventRepository;
 use Symfony\Component\Uid\Uuid;
+use App\Entity\Utilisateur;
 class EvenementService
 {
     private EntityManagerInterface $em;
@@ -48,7 +49,10 @@ class EvenementService
         try {
             // 1️⃣ Vérification du type d'événement
             $user = $this->utilisateurRepository->find($userId);
-            
+            $status= $user->getStatus();
+            if($status && $status->getName() !=='Actif'){
+                throw new \Exception("Inactif");
+            }
 
             if (!$user) {
                 throw new \Exception("Utilisateur introuvable avec l'ID : $userId");
@@ -99,9 +103,19 @@ class EvenementService
     {
         return $this->typeEventRepository->find($id);
     }
-    public function getEvenementDateBefore(\DateTimeInterface $date,$limit): array
+    public function getEvenementDateBefore(\DateTimeInterface $date,$limit,Utilisateur $user = null): array
     {
-        return $this->evenementRepository->findEvenementsBeforeDate($date,$limit);
+        return $this->evenementRepository->findEvenementsBeforeDate($date,$limit,$user);
+    }
+    public function getEvenementDateBeforeId(\DateTimeInterface $date,$limit, $idUser): array
+    {
+            $user = $this->utilisateurRepository->find($idUser);
+            $status= $user->getStatus();
+            if($status && $status->getName() !=='Actif'){
+                throw new \Exception("Inactif");
+            }
+
+        return $this->getEvenementDateBefore($date,$limit,$user);
     }
 
 

@@ -31,7 +31,7 @@ class UtilisateurController extends AbstractController
         $this->params = $params;
     }
 
-    #[Route('/create', name: 'api_utilisateur_create', methods: ['POST'])]
+    #[Route('', name: 'api_utilisateur_create', methods: ['POST'])]
     #[TokenRequired(['Admin','Utilisateur'])]
     public function createUser(Request $request): JsonResponse
     {

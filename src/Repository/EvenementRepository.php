@@ -6,7 +6,7 @@ use App\Entity\Evenement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
-
+use App\Entity\Utilisateur;
 /**
  * @extends ServiceEntityRepository<Evenement>
  */
@@ -45,15 +45,22 @@ class EvenementRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-    public function findEvenementsBeforeDate(\DateTimeInterface $date, int $limit = 10): array
+
+    public function findEvenementsBeforeDate(\DateTimeInterface $date, int $limit = 10, Utilisateur $user = null): array
     {
-        return $this->createQueryBuilder('e')
+        $qb = $this->createQueryBuilder('e')
             ->andWhere('e.datePublication < :date')
             ->setParameter('date', $date)
             ->orderBy('e.datePublication', 'DESC')
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
+            ->setMaxResults($limit);
+
+        if ($user && $user->getRole()->getName() !== 'Admin') {
+            $qb->andWhere('e.utilisateur = :user')
+            ->setParameter('user', $user);
+        }
+
+        return $qb->getQuery()->getResult();
     }
+
 
 }   

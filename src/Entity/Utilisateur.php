@@ -30,6 +30,10 @@ class Utilisateur
     #[ORM\JoinColumn(nullable: false)]
     private ?Role $role = null;
 
+     #[ORM\ManyToOne(targetEntity: Status::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Status $status = null;
+
 
     public function getId(): ?int
     {
@@ -91,6 +95,16 @@ class Utilisateur
     public function setRole(?Role $role): static
     {
         $this->role = $role;
+
+        return $this;
+    }
+    public function getStatus(): ?Status
+    {
+        return $this->status;
+    }
+    public function setStatus(?Status $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }

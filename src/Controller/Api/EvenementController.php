@@ -109,26 +109,36 @@ class EvenementController extends AbstractController
             // Retourne l'erreur en JSON
             error_log($e->getMessage());
             error_log($e->getTraceAsString());
+            if ($e->getMessage() === 'Inactif') {
+                    return new JsonResponse([
+                        'status' => 'error',
+                        'message' => 'Utilisateur inactif'
+                    ], 401); // ← renvoie bien 401
+            }
             
             return new JsonResponse([
                 'status' => 'error',
                 'message' => $e->getMessage()
-            ], 500);
+            ], 400);
         }
     }
 
     #[Route('', name: 'evenements_avant', methods: ['GET'])]
-    #[TokenRequired]
+    #[TokenRequired(['Admin','Utilisateur'])]
     public function getEvenementsAvant(Request $request): JsonResponse
     {
         try {
+            $token = $this->jwtTokenManager->extractTokenFromRequest($request);
+            $arrayToken = $this->jwtTokenManager->extractClaimsFromToken($token);
+            $idUser = $arrayToken['id']; 
             $dateParam = $request->query->get('date');
             $limitParam = $request->query->get('limit');
 
             $date = $dateParam ? new \DateTime($dateParam) : new \DateTime();
             $limit = $limitParam ? (int)$limitParam : 10;
 
-            $evenements = $this->evenementService->getEvenementDateBefore($date, $limit);
+
+            $evenements = $this->evenementService->getEvenementDateBeforeId($date, $limit, $idUser);
 
             $evenementsArray = array_map(function ($e) {
                 return [
@@ -149,11 +159,19 @@ class EvenementController extends AbstractController
             ], 200);
 
         } catch (\Exception $e) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
-        }
+                if ($e->getMessage() === 'Inactif') {
+                    return new JsonResponse([
+                        'status' => 'error',
+                        'message' => 'Utilisateur inactif'
+                    ], 401); // ← renvoie bien 401
+                }
+
+                return new JsonResponse([
+                    'status' => 'error',
+                    'message' => $e->getMessage()
+                ], 400);
+            }
+
     }
 
 }

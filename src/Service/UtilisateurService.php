@@ -2,11 +2,11 @@
 
 namespace App\Service;
 
-use App\Entity\Role;
 use App\Entity\Utilisateur;
 use App\Repository\RoleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UtilisateurRepository;
+use App\Repository\StatusRepository;
 
 class UtilisateurService
 {
@@ -15,11 +15,14 @@ class UtilisateurService
     private UtilisateurRepository $utilisateurRepository;
     private RoleRepository $roleRepository;
 
-    public function __construct(EntityManagerInterface $em, UtilisateurRepository $utilisateurRepository, RoleRepository $roleRepository)
+    private StatusRepository $statusRepository;
+
+    public function __construct(EntityManagerInterface $em, UtilisateurRepository $utilisateurRepository, RoleRepository $roleRepository, StatusRepository $statusRepository)
     {
         $this->em = $em;
         $this->utilisateurRepository = $utilisateurRepository;
         $this->roleRepository = $roleRepository;
+        $this->statusRepository = $statusRepository;
     }
 
     /**
@@ -43,6 +46,8 @@ class UtilisateurService
     {
         $role= $this->roleRepository->find(2); // 2 correspond au rôle "Utilisateur"
         $user->setRole($role);
+        $status= $this->statusRepository->find(1); // 1 correspond au status "Actif"
+        $user->setStatus($status);
         return $this->createUserByRole($user);
     }
 
