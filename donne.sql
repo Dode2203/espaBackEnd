@@ -8,6 +8,6 @@ INSERT INTO Status (id, name) VALUES (1, 'Actif');
 INSERT INTO Status (id, name) VALUES (2, 'Inactif');
 
 
-UPDATE utilisateur SET status_id = 1;
+UPDATE utilisateur SET status_id = 2;
 
 

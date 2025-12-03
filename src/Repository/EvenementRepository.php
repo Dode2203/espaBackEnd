@@ -7,6 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
 use App\Entity\Utilisateur;
+use App\Entity\TypeEvent;
 /**
  * @extends ServiceEntityRepository<Evenement>
  */
@@ -16,9 +17,18 @@ class EvenementRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Evenement::class);
     }
-    public function getById(Uuid $id): ?Evenement
+
+    public function getById(string $id): ?Evenement
     {
-        return $this->find($id);
+        // Vérifie que la chaîne est un UUID valide
+        if (!Uuid::isValid($id)) {
+            throw new \InvalidArgumentException("UUID invalide : $id");
+        }
+
+        // Convertit en objet Uuid
+        $uuid = Uuid::fromString($id);
+
+        return $this->find($uuid);
     }
 
     //    /**
@@ -46,7 +56,7 @@ class EvenementRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    public function findEvenementsBeforeDate(\DateTimeInterface $date, int $limit = 10, Utilisateur $user = null): array
+    public function findEvenementsBeforeDate(\DateTimeInterface $date, int $limit = 10, Utilisateur $user = null,TypeEvent $typeEvent = null): array
     {
         $qb = $this->createQueryBuilder('e')
             ->andWhere('e.datePublication < :date')
@@ -57,6 +67,10 @@ class EvenementRepository extends ServiceEntityRepository
         if ($user && $user->getRole()->getName() !== 'Admin') {
             $qb->andWhere('e.utilisateur = :user')
             ->setParameter('user', $user);
+        }
+        if ($typeEvent !== null) {
+            $qb->andWhere('e.typeEvent = :typeEvent')
+                ->setParameter('typeEvent', $typeEvent);
         }
 
         return $qb->getQuery()->getResult();
