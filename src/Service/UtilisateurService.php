@@ -7,6 +7,7 @@ use App\Repository\RoleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UtilisateurRepository;
 use App\Repository\StatusRepository;
+use Exception;
 
 class UtilisateurService
 {
@@ -45,6 +46,45 @@ class UtilisateurService
     public function getAllUsers(): array
     {
         return $this->utilisateurRepository->findAll();
+    }
+    public function getUserById(int $id): ?Utilisateur
+    {
+        return $this->em->getRepository(Utilisateur::class)->find($id);
+    }
+    public function updateUser($idUser, array $data): Utilisateur
+    {
+        $user = $this->utilisateurRepository->find($idUser);
+        if(!$user){
+            throw new Exception('Utilisateur non trouvé pour id=' . $idUser);
+        }
+        if (isset($data['prenom'])) {
+            $user->setPrenom($data['prenom']);
+        }
+
+        if (isset($data['nom'])) {
+            $user->setNom($data['nom']);
+        }
+
+        if (isset($data['email'])) {
+            $user->setEmail($data['email']);
+        }
+
+        if (isset($data['role'])) {
+            $role = $this->roleRepository->findOneBy(['name' => $data['role']]);
+            if (!$role) {
+                throw new \InvalidArgumentException('Rôle introuvable');
+            }
+            $user->setRole($role);
+        }
+
+        if (isset($data['mdp']) && !empty($data['mdp'])) {
+            $hashedPassword = password_hash($data['mdp'], PASSWORD_BCRYPT);
+            $user->setMdp($hashedPassword);
+        }
+
+        $this->em->flush();
+
+        return $user;
     }
     public function createUser(Utilisateur $user): Utilisateur
     {
