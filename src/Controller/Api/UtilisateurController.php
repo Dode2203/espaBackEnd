@@ -69,6 +69,7 @@ class UtilisateurController extends AbstractController
             }
 
     }
+
     #[Route('', name: 'api_utilisateur_create', methods: ['POST'])]
     #[TokenRequired(['Admin','Utilisateur'])]
     public function createUser(Request $request): JsonResponse
@@ -117,12 +118,69 @@ class UtilisateurController extends AbstractController
 				'status' => 'error',
 				'message' => $e->getMessage()
 			], 400);
-		}
-        
-        
-
-        
+		}        
     }
+
+    #[Route('/{id}', name: 'api_utilisateur_get_one', methods: ['GET'])]
+    #[TokenRequired(['Admin','Utilisateur'])]
+    public function getOneUser(int $id): JsonResponse
+    {
+        $user = $this->utilisateurService->getUserById($id);
+
+        if (!$user) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'Utilisateur non trouvé'
+            ], 404);
+        }
+
+        return new JsonResponse([
+            'status' => 'success',
+            'data' => [
+                'id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'nom' => $user->getNom(),
+                'prenom' => $user->getPrenom(),
+                'role' => $user->getRole()->getName(),
+                'status' => $user->getStatus() ? $user->getStatus()->getName() : null
+            ]
+        ], 200);
+    }
+
+    #[Route('/{id}', name: 'api_utilisateur_update', methods: ['PUT'])]
+    #[TokenRequired(['Admin','Utilisateur'])]
+    public function updateUser(int $id, Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (!is_array($data)) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'Données invalides ou JSON mal formé'
+            ], 400);
+        }
+
+        try {
+            $user = $this->utilisateurService->updateUser($id, $data);
+            return new JsonResponse([
+                'status' => 'success',
+                'data' => [
+                    'id' => $user->getId(),
+                    'nom' => $user->getNom(),
+                    'prenom' => $user->getPrenom(),
+                    'email' => $user->getEmail(),
+                    'role' => $user->getRole()->getName()
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+
 
     #[Route('/login', name: 'api_utilisateur_login', methods: ['POST'])]
     public function login(Request $request): JsonResponse
