@@ -169,7 +169,8 @@ class UtilisateurController extends AbstractController
                     'nom' => $user->getNom(),
                     'prenom' => $user->getPrenom(),
                     'email' => $user->getEmail(),
-                    'role' => $user->getRole()->getName()
+                    'role' => $user->getRole()->getName() ? $user->getRole()->getName() : null,
+                    'status' => $user->getStatus() ? $user->getStatus()->getName() : null
                 ]
             ], 200);
         } catch (\Exception $e) {
