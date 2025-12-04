@@ -50,5 +50,15 @@ class UtilisateurRepository extends ServiceEntityRepository
 
         return null; 
     }
+    public function getAllParOrdre(): array
+       {
+           return $this->createQueryBuilder('u')
+               
+               ->orderBy('u.dateCreation', 'ASC')
+               ->getQuery()
+               ->getResult()
+           ;
+       }
+    
 
 }

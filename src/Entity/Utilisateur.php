@@ -5,7 +5,9 @@ namespace App\Entity;
 use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Role;
+use Doctrine\DBAL\Types\Types;   //
 
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 class Utilisateur 
 {
@@ -33,6 +35,9 @@ class Utilisateur
      #[ORM\ManyToOne(targetEntity: Status::class)]
     #[ORM\JoinColumn(nullable: true)]
     private ?Status $status = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateCreation = null;
 
 
     public function getId(): ?int
@@ -105,6 +110,16 @@ class Utilisateur
     public function setStatus(?Status $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+    public function getDateCreation(): ?\DateTimeInterface
+    {
+        return $this->dateCreation;
+    }
+    public function setDateCreation(?\DateTimeInterface $dateCreation): static
+    {
+        $this->dateCreation = $dateCreation;
 
         return $this;
     }

@@ -45,7 +45,7 @@ class UtilisateurService
     }
     public function getAllUsers(): array
     {
-        return $this->utilisateurRepository->findAll();
+        return $this->utilisateurRepository->getAllParOrdre();
     }
     public function getUserById(int $id): ?Utilisateur
     {
