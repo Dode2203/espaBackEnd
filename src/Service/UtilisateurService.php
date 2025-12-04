@@ -77,6 +77,14 @@ class UtilisateurService
             $user->setRole($role);
         }
 
+        if (isset($data['status'])) {
+            $status = $this->statusRepository->findOneBy(['name' => $data['status']]);
+            if (!$status) {
+                throw new \InvalidArgumentException('Status introuvable');
+            }
+            $user->setStatus($status);
+        }
+
         if (isset($data['mdp']) && !empty($data['mdp'])) {
             $hashedPassword = password_hash($data['mdp'], PASSWORD_BCRYPT);
             $user->setMdp($hashedPassword);
