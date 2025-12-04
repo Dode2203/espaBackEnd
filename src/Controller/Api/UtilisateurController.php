@@ -31,7 +31,7 @@ class UtilisateurController extends AbstractController
         $this->params = $params;
     }
     #[Route('', name: 'user', methods: ['GET'])]
-    #[TokenRequired(['Admin','Utilisateur'])]
+    #[TokenRequired(['Admin'])]
     public function getUtilisateur(Request $request): JsonResponse
     {
         try {
@@ -71,7 +71,7 @@ class UtilisateurController extends AbstractController
     }
 
     #[Route('', name: 'api_utilisateur_create', methods: ['POST'])]
-    #[TokenRequired(['Admin','Utilisateur'])]
+    #[TokenRequired(['Admin'])]
     public function createUser(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -122,7 +122,7 @@ class UtilisateurController extends AbstractController
     }
 
     #[Route('/{id}', name: 'api_utilisateur_get_one', methods: ['GET'])]
-    #[TokenRequired(['Admin','Utilisateur'])]
+    #[TokenRequired(['Admin'])]
     public function getOneUser(int $id): JsonResponse
     {
         $user = $this->utilisateurService->getUserById($id);
@@ -148,7 +148,7 @@ class UtilisateurController extends AbstractController
     }
 
     #[Route('/{id}', name: 'api_utilisateur_update', methods: ['PUT'])]
-    #[TokenRequired(['Admin','Utilisateur'])]
+    #[TokenRequired(['Admin'])]
     public function updateUser(int $id, Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);

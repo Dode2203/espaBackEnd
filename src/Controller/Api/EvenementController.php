@@ -219,6 +219,52 @@ class EvenementController extends AbstractController
             }
 
     }
+    #[Route('/all', name: 'all', methods: ['GET'])]
+    public function getAllAvant(Request $request): JsonResponse
+    {
+        try {
+            $dateParam = $request->query->get('date');
+            $limitParam = $request->query->get('limit');
+
+            $date = $dateParam ? new \DateTime($dateParam) : new \DateTime();
+            $limit = $limitParam ? (int)$limitParam : 10;
+
+
+            $evenements = $this->evenementService-> getEvenementDateBefore($date, $limit);
+
+            $evenementsArray = array_map(function ($e) {
+                return [
+                    'id' => $e->getId(),
+                    'titre' => $e->getTitre(),
+                    'description' => $e->getDescription(),
+                    'debut' => $e->getDebut()?->format('Y-m-d'),
+                    'fin' => $e->getFin()?->format('Y-m-d'),
+                    'type' => $e->getTypeEvent()?->getName(),
+                    'photoId' => $e->getPhoto()?->getId(),
+                    'datePublication' => $e->getDatePublication()?->format('Y-m-d H:i:s'),
+                ];
+            }, $evenements);
+
+            return new JsonResponse([
+                'status' => 'success',
+                'data' => $evenementsArray
+            ], 200);
+
+        } catch (\Exception $e) {
+                if ($e->getMessage() === 'Inactif') {
+                    return new JsonResponse([
+                        'status' => 'error',
+                        'message' => 'Utilisateur inactif'
+                    ], 401); // ← renvoie bien 401
+                }
+
+                return new JsonResponse([
+                    'status' => 'error',
+                    'message' => $e->getMessage()
+                ], 400);
+            }
+
+    }
     #[Route('/events', name: 'event_avant', methods: ['GET'])]
     public function getEventAvant(Request $request): JsonResponse
     {
