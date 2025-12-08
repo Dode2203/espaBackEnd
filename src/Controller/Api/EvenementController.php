@@ -59,7 +59,7 @@ class EvenementController extends AbstractController
             if (!empty($missingFields)) {
                 return new JsonResponse([
                     'status' => 'error',
-                    'message' => 'Champs requis manquants : ' . implode(', ', $missingFields) .$typeEventId,
+                    'message' => 'Champs requis manquants : ' . implode(', ', $missingFields),
                     'missingFields' => $missingFields
                 ], 400);
             }

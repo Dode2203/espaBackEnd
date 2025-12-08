@@ -94,9 +94,12 @@ class UtilisateurService
 
         return $user;
     }
-    public function createUser(Utilisateur $user): Utilisateur
+    public function createUser(Utilisateur $user,$role_id=2): Utilisateur
     {
-        $role= $this->roleRepository->find(2); // 2 correspond au rôle "Utilisateur"
+        $role= $this->roleRepository->find($role_id); // 2 correspond au rôle "Utilisateur"
+        if (!$role) {
+            throw new Exception("Role non trouvé pour id=".$role_id);
+        }
         $user->setRole($role);
         $status= $this->statusRepository->find(1); // 1 correspond au status "Actif"
         $user->setStatus($status);

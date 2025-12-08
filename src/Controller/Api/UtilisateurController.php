@@ -76,7 +76,7 @@ class UtilisateurController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        $requiredFields = ['email', 'nom', 'prenom', 'mdp'];
+        $requiredFields = ['email', 'nom', 'prenom', 'mdp','role'];
         $missingFields = [];
 
         foreach ($requiredFields as $field) {
@@ -88,7 +88,7 @@ class UtilisateurController extends AbstractController
         if (!empty($missingFields)) {
             return new JsonResponse([
                 'status' => 'error',
-                'message' => 'Champs requis manquants',
+                'message' => 'Champs requis manquants '. implode(', ', $missingFields),
                 'missingFields' => $missingFields
             ], 400);
         }
@@ -101,8 +101,9 @@ class UtilisateurController extends AbstractController
         // 🔐 Hashage simple du mot de passe
         $plainPassword = $data['mdp'];
         $user->setMdp($plainPassword);
+        $role= $data['role'];
         try {
-            $user = $this->utilisateurService->createUser($user);
+            $user = $this->utilisateurService->createUser($user,$role);
             return new JsonResponse([
             'status' => 'success',
             'user' => [
