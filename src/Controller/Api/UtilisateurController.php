@@ -209,9 +209,17 @@ class UtilisateurController extends AbstractController
         $email = $data['email'];
         $plainPassword = $data['mdp'];
 
+
         // 🔑 Vérification du login via le repository
         $user = $this->utilisateurService->login($email, $plainPassword);
 
+        if (!$user) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'Identifiants invalides'
+            ], 404);
+        }
+        
         $user_status= $user->getStatus()->getName();
         if ($user_status==="Inactif") {
             return new JsonResponse([
@@ -219,12 +227,7 @@ class UtilisateurController extends AbstractController
                 'message' => 'Utilisateur inactif'
             ], 401);
         }
-        if (!$user) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => 'Identifiants invalides'
-            ], 404);
-        }
+        
         $claims = [
             'id' => $user->getId(),
             'email' => $user->getEmail(),
