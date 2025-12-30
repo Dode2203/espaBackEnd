@@ -20,5 +20,6 @@ VALUES (
     1
 );
 
+UPDATE utilisateur SET status_id = 2;
 
 

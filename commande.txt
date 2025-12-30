@@ -20,7 +20,7 @@ pour lancer le serveur
 
 php -S 192.168.88.254:8000 -t public
 
-php -S 192.168.1.185:8000 -t public
+php -S 10.225.228.30:8000 -t public
 
 php -S 192.168.1.212:8000 -t public
 
